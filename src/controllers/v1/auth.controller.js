@@ -24,7 +24,6 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const { access_token } = req.cookies;
-    console.log("dhjasgdhsadghasghsdhjasghdhja", access_token);
     if (access_token) {
       throw { message: "You are logged in", code: 400 };
     }
