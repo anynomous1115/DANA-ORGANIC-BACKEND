@@ -1,0 +1,21 @@
+const Joi = require("joi");
+const { objectId } = require("../custom.validation");
+
+const productsValidation = (data) => {
+  const productsSchema = Joi.object({
+    productName: Joi.string().required(),
+    origin: Joi.string().required(),
+    description: Joi.string().required(),
+    price: Joi.number().required(),
+    slug: Joi.string().required(),
+    categoriesId: Joi.string().required().custom(objectId),
+    weight: Joi.number().required(),
+    sold: Joi.number().required(),
+    quantity: Joi.number().required(),
+  });
+  return productsSchema.validate(data);
+};
+
+module.exports = {
+  productsValidation,
+};

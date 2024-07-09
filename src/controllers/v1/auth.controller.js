@@ -7,13 +7,12 @@ const {
 
 const register = async (req, res) => {
   try {
-    const { customerBody } = req.body;
-    const { password, rePassword } = customerBody;
+    const { password, rePassword } = req.body;
     if (rePassword !== password) {
       errorHandler(res, "Bad Request !", 400, "Confirm Password is incorrect!");
       return;
     }
-    await registerServic(customerBody);
+    await registerServic(req.body);
     successHandler(res, null, "Customer registered successfully!", 201);
   } catch (error) {
     errorHandler(res, error);
