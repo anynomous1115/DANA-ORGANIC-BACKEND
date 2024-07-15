@@ -39,6 +39,11 @@ const CustomerSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    disable: {
+      type: Boolean,
+      default: false,
+
+    }
   },
   {
     timestamps: true,
