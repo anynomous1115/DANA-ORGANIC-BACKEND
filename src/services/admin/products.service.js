@@ -31,6 +31,13 @@ const getProductService = async (id) => {
 };
 
 const createProductService = async (product) => {
+  const productExist = await Product.findOne({
+    productName: product.productName,
+  }).exec();
+  if (productExist) {
+    throw { message: "Product already exists!", code: 400 };
+  }
+
   const newProduct = new Product(product);
   return await newProduct.save();
 };
