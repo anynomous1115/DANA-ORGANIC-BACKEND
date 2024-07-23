@@ -7,7 +7,7 @@ const getAllCategoriesService = async (page, limit) => {
     throw { message: "Categories not found!", code: 404 };
   }
 
-  return data;
+  return categories;
 };
 
 const getCategoryService = async (id) => {
@@ -19,6 +19,13 @@ const getCategoryService = async (id) => {
 };
 
 const createCategoryService = async (category) => {
+  const categoryExist = await Category.findOne({
+    categoryName: category.categoryName,
+  }).exec();
+  if (categoryExist) {
+    throw { message: "Category already exists!", code: 400 };
+  }
+
   const newCategory = new Category(category);
   return await newCategory.save();
 };
@@ -46,5 +53,5 @@ module.exports = {
   getCategoryService,
   createCategoryService,
   updateCategoryService,
-  deleteCategoryService
+  deleteCategoryService,
 };

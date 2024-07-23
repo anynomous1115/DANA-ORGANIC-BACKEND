@@ -1,4 +1,4 @@
-const { successHandler } = require("../../helper/response");
+const { successHandler, errorHandler } = require("../../helper/response");
 const {
   getAllCategoriesService,
   getCategoryService,
@@ -14,6 +14,7 @@ const getAllCategories = async (req, res) => {
     const categories = await getAllCategoriesService(page, limit);
     successHandler(res, categories, "Categories fetched successfully!", 200);
   } catch (error) {
+    console.log(error);
     errorHandler(res, error);
   }
 };
@@ -24,7 +25,6 @@ const getCategory = async (req, res) => {
     const category = await getCategoryService(categoryId);
     successHandler(res, category, "Categories fetched successfully!", 200);
   } catch (error) {
-    console.log(error);
     errorHandler(res, error);
   }
 };
