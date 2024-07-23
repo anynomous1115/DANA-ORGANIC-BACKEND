@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const PaymentMethod = new mongoose.Schema(
+const PaymentMethodSchema = new mongoose.Schema(
   {
     nameMethod: {
       type: String,
@@ -20,5 +20,5 @@ const PaymentMethod = new mongoose.Schema(
   }
 );
 
-const PaymentMethodModel = mongoose.model("paymentMethods", PaymentMethod);
-module.exports = PaymentMethodModel;
+const PaymentMethod = mongoose.model("paymentMethods", PaymentMethodSchema);
+module.exports = PaymentMethod;

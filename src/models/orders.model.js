@@ -1,3 +1,4 @@
+const { not } = require("joi");
 const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
@@ -24,6 +25,14 @@ const OrderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  note: {
+    type: String,
+    required: false,
+  },
+  paymentStatus:{
+    type: String,
+    required: true,
+  }
 });
 
 const Order = mongoose.model("orders", OrderSchema);
