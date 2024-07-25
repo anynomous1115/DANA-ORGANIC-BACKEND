@@ -7,7 +7,6 @@ const productsValidation = (data) => {
     origin: Joi.string().required(),
     description: Joi.string().required(),
     price: Joi.number().required(),
-    slug: Joi.string().required(),
     categoriesId: Joi.string().required().custom(objectId),
     weight: Joi.number().required(),
     sold: Joi.number().required(),
