@@ -6,9 +6,9 @@ const FeedbackSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    postId: {
+    productId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "posts",
+      ref: "products",
       required: true,
     },
     customerId: {
