@@ -29,10 +29,14 @@ const OrderSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  paymentStatus:{
+  paymentStatus: {
     type: String,
     required: true,
-  }
+  },
+  id_payment: {
+    type: String,
+    required: false,
+  },
 });
 
 const Order = mongoose.model("orders", OrderSchema);
