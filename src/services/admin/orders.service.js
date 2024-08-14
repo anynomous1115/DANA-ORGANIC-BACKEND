@@ -5,7 +5,11 @@ const OrderProduct = require("../../models/orders-products.model");
 const Order = require("../../models/orders.model");
 const PaymentMethod = require("../../models/paymentMethods.model");
 const Product = require("../../models/products.model");
-
+const { accessKey, secretKey, partnerCode } = require("../../configs/momo");
+const crypto = require("crypto");
+const axios = require("axios");
+const config = require("../../configs/momo");
+const configMomo = require("../../configs/momo");
 const getAllOrdersService = async (page, limit) => {
   const startIndex = (page - 1) * limit;
   const orders = await Order.find().skip(startIndex).limit(limit).exec();
@@ -52,36 +56,24 @@ const getOrderByIdService = async (id) => {
   return order;
 };
 
-// const createOrderService = async (order) => {
-//   const orderExist = await Order.findOne({
-//     customerId: order.customerId,
-//   }).exec();
-//   if (orderExist) {
-//     throw { message: "Order already exists!", code: 400 };
-//   }
-
-//   const newOrder = new Order(order);
-//   return await newOrder.save();
-// };
-
-// const updateOrderService = async (id, order) => {
-//   const updatedOrder = await Order.findByIdAndUpdate(
-//     id,
-//     {
-//       $set: {
-//         subTotal: order.subTotal,
-//         note: order.note,
-//       },
-//     },
-//     {
-//       new: true,
-//     }
-//   );
-//   if (!updatedOrder) {
-//     throw { message: "Order not found!", code: 404 };
-//   }
-//   return updatedOrder;
-// };
+const updateOrderService = async (id, order) => {
+  const updatedOrder = await Order.findByIdAndUpdate(
+    id,
+    {
+      $set: {
+        subTotal: order.subTotal,
+        note: order.note,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+  if (!updatedOrder) {
+    throw { message: "Order not found!", code: 404 };
+  }
+  return updatedOrder;
+};
 
 const updateOrderStatusService = async (id, status) => {
   const updatedOrder = await Order.findByIdAndUpdate(
@@ -110,11 +102,13 @@ const updateOrderStatusService = async (id, status) => {
 //   return deletedOrder;
 // };
 
+// payOrderService
+
 module.exports = {
   getAllOrdersService,
   getOrderByIdService,
-  // createOrderService,
-  // updateOrderService,
+
+  updateOrderService,
   // deleteOrderService,
   updateOrderStatusService,
 };
