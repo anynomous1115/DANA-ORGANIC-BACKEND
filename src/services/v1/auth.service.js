@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const Customer = require("../../models/customers.model");
 
 const registerServic = async (customerBody) => {
-  const { fullname, email, password, Dob } = customerBody;
+  const { fullname, email, password, phone, Dob } = customerBody;
   const isExistingCustomer = await Customer.findOne({ email });
 
   if (isExistingCustomer) {
@@ -13,6 +13,7 @@ const registerServic = async (customerBody) => {
     fullname,
     email,
     password,
+    phone,
     Dob,
   });
 

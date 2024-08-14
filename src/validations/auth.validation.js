@@ -8,12 +8,13 @@ const registerValidation = (data) => {
     email: Joi.string().required().email().lowercase(),
     password: Joi.string().required().custom(password),
     rePassword: Joi.string().required().valid(Joi.ref("password")),
+    phone: Joi.string().allow(null, ""),
     Dob: Joi.date().required(),
   });
   return registerSchema.validate(data);
 };
 
-const loginValidation = (data) => {
+const loginValidation = (data) => { 
   const loginSchema = Joi.object().keys({
     email: Joi.string().required().email().lowercase(),
     password: Joi.string().required(),

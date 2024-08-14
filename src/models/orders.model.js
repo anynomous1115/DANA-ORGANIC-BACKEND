@@ -18,7 +18,11 @@ const OrderSchema = new mongoose.Schema({
     required: true,
   },
   subTotal: {
-    type: String,
+    type: Number,
+    required: true,
+  },
+  shipFee: {
+    type: Number,
     required: true,
   },
   status: {
@@ -29,10 +33,10 @@ const OrderSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  paymentStatus:{
+  paymentStatus: {
     type: String,
     required: true,
-  }
+  },
 });
 
 const Order = mongoose.model("orders", OrderSchema);

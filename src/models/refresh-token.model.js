@@ -1,16 +1,21 @@
 const mongoose = require("mongoose");
 
-const refreshTokenSchema = new mongoose.Schema({
-  userId: {
+const tokenSchema = new mongoose.Schema({
+  authId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-  token: {
+  refreshToken: {
     type: String,
     required: true,
     unique: true,
   },
-  expiresAt: {
+  accessToken: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  expiresAtOfRefreshToken: {
     type: Date,
     required: true,
   },
@@ -29,6 +34,6 @@ refreshTokenSchema.pre("save", function (next) {
   next();
 });
 
-const RefreshToken = mongoose.model("RefreshToken", refreshTokenSchema);
+const Token = mongoose.model("token", tokenSchema);
 
-module.exports = RefreshToken;
+module.exports = Token;

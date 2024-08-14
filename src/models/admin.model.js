@@ -22,23 +22,29 @@ const AdminSchema = new mongoose.Schema({
     minlength: 8,
     select: false, // Exclude the password field from queries
   },
+  role: {
+    type: String,
+    required: true,
+    enum: ["admin", "superadmin"],
+    default: "admin",
+  },
 });
 
 // Create a unique index on the email field
-CustomerSchema.index({ email: 1 }, { unique: true });
+AdminSchema.index({ email: 1 }, { unique: true });
 
-// Hash the password before saving
-CustomerSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-  next();
-});
+// // Hash the password before saving
+// AdminSchema.pre("save", async function (next) {
+//   if (this.isModified("password")) {
+//     this.password = await bcrypt.hash(this.password, 10);
+//   }
+//   next();
+// });
 
-// Add a method to compare passwords
-CustomerSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
-};
+// // Add a method to compare passwords
+// AdminSchema.methods.comparePassword = async function (candidatePassword) {
+//   return await bcrypt.compare(candidatePassword, this.password);
+// };
 
 // Create the Customer model
 const Admin = mongoose.model("admin", AdminSchema);

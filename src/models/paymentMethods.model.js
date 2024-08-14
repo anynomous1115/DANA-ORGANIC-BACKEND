@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const PaymentMethodSchema = new mongoose.Schema(
   {
-    nameMethod: {
+    methodName: {
       type: String,
       required: true,
     },
-    descriptionMethod: {
+    methodDescription: {
       type: String,
       required: true,
     },
