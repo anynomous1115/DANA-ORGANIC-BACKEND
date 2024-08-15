@@ -1,10 +1,10 @@
+const { successHandler, errorHandler } = require("../../helper/response");
+const { loginAdminService } = require("../../services/admin/auth.service");
+
 const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const { access_token } = req.cookies;
-    if (access_token) {
-      throw { message: "You are logged in", code: 400 };
-    }
+    console.log(email, password);
     const { accessToken, ageToken } = await loginAdminService(email, password);
     res.cookie("access_token", accessToken, {
       httpOnly: true,

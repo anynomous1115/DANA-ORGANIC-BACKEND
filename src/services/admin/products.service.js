@@ -1,4 +1,6 @@
+const mongoose = require("mongoose");
 const Category = require("../../models/categories.model");
+const OrderProduct = require("../../models/orders-products.model");
 const Product = require("../../models/products.model");
 
 const getAllProductsService = async (page, limit) => {
@@ -37,7 +39,6 @@ const createProductService = async (product) => {
   if (productExist) {
     throw { message: "Product already exists!", code: 400 };
   }
-
   const newProduct = new Product(product);
   return await newProduct.save();
 };
@@ -53,6 +54,10 @@ const updateProductService = async (id, product) => {
 };
 
 const deleteProductService = async (id) => {
+  const checkOrderProducts = await OrderProduct.find(id);
+  if(checkOrderProducts){
+    throw { message: "Product is still in the cart", code: 404 };
+  }
   const deletedProduct = await Product.findByIdAndDelete(id);
   if (!deletedProduct) {
     throw { message: "Product not found!", code: 404 };
@@ -66,4 +71,4 @@ module.exports = {
   createProductService,
   updateProductService,
   deleteProductService,
-}; 
+};

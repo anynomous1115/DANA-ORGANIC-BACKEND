@@ -33,6 +33,7 @@ const createProduct = async (req, res) => {
   try {
     const product = req.body;
     const createdProduct = await createProductService(product);
+    console.log(createdProduct);
     successHandler(res, createdProduct, "Product created successfully!", 201);
   } catch (error) {
     errorHandler(res, error);
