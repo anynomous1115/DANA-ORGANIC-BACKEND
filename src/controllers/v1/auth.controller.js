@@ -3,6 +3,7 @@ const {
   registerServic,
   loginService,
   checkUserLoginService,
+  logoutService,
 } = require("../../services/v1/auth.service");
 
 const register = async (req, res) => {
@@ -12,9 +13,10 @@ const register = async (req, res) => {
       errorHandler(res, "Bad Request !", 400, "Confirm Password is incorrect!");
       return;
     }
-    await registerServic(req.body);
-    successHandler(res, null, "Customer registered successfully!", 201);
+    const customer = await registerServic(req.body);
+    successHandler(res, customer, "Customer registered successfully!", 201);
   } catch (error) {
+    console.log(error);
     errorHandler(res, error);
   }
 };
@@ -33,16 +35,21 @@ const login = async (req, res) => {
     });
     successHandler(res, {}, "Logged in successfully!", 200);
   } catch (error) {
-    console.error(error);
+    console.log(error);
     errorHandler(res, error);
   }
 };
 
 const logout = async (req, res) => {
-  return res
-    .clearCookie("access_token")
-    .status(200)
-    .json({ code: 200, message: "Successfully logged out!" });
+  try {
+    await logoutService(req.accessTokenVerify);
+    return res
+      .clearCookie("access_token")
+      .status(200)
+      .json({ code: 200, message: "Successfully logged out!" });
+  } catch (error) {
+    errorHandler(res, error);
+  }
 };
 
 const checkUserLogin = async (req, res) => {

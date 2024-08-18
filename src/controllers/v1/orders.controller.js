@@ -54,7 +54,6 @@ const paymentCheck = async (req, res) => {
 
 module.exports = {
   createOrder,
-
   paymenMomo,
   paymentCallback,
   paymentCheck,

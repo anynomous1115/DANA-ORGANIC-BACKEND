@@ -1,10 +1,22 @@
 const express = require("express");
- const { paymenMomo, createOrder, paymentCallback, paymentCheck } = require("../../controllers/v1/orders.controller");
-  
+const {
+  paymenMomo,
+  createOrder,
+  paymentCallback,
+  paymentCheck,
+} = require("../../controllers/v1/orders.controller");
+const { checkAuth, authorize } = require("../../middlewares/authenToken");
+const role = require("../../utils/role");
+
 const router = express.Router();
 
-router.post("/", createOrder);
-router.post("/momo", paymenMomo);
-router.post("/momo/callback", paymentCallback);
-router.post("/momo/check", paymentCheck);
+router.post("/", checkAuth, authorize(role.customer), createOrder);
+router.post("/momo", checkAuth, authorize(role.customer), paymenMomo);
+router.post(
+  "/momo/callback",
+  checkAuth,
+  authorize(role.customer),
+  paymentCallback
+);
+router.post("/momo/check", checkAuth, authorize(role.customer), paymentCheck);
 module.exports = router;

@@ -54,8 +54,12 @@ const CustomerSchema = new mongoose.Schema(
     disable: {
       type: Boolean,
       default: false,
-
-    }
+    },
+    role: {
+      type: String,
+      enum: ["customer"],
+      default: "customer",
+    },
   },
   {
     timestamps: true,
@@ -64,21 +68,6 @@ const CustomerSchema = new mongoose.Schema(
 
 // Create a unique index on the email field
 CustomerSchema.index({ email: 1 }, { unique: true });
-
-// Hash the password before saving
-CustomerSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-  next();
-});
-
-// Add a method to compare passwords
-CustomerSchema.methods.comparePassword = async function (candidatePassword) {
-  const customer = this;
-  const isCheck = await bcrypt.compare(candidatePassword, customer.password);
-  return isCheck;
-};
 
 // Create the Customer model
 const Customer = mongoose.model("customers", CustomerSchema);

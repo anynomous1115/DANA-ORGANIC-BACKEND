@@ -5,11 +5,7 @@ const OrderProduct = require("../../models/orders-products.model");
 const Order = require("../../models/orders.model");
 const PaymentMethod = require("../../models/paymentMethods.model");
 const Product = require("../../models/products.model");
-const { accessKey, secretKey, partnerCode } = require("../../configs/momo");
-const crypto = require("crypto");
-const axios = require("axios");
-const config = require("../../configs/momo");
-const configMomo = require("../../configs/momo");
+
 const getAllOrdersService = async (page, limit) => {
   const startIndex = (page - 1) * limit;
   const orders = await Order.find().skip(startIndex).limit(limit).exec();
@@ -42,6 +38,7 @@ const getAllOrdersService = async (page, limit) => {
         },
         paymentMethod: paymentMethod,
         orderProducts: orderProducts,
+        productName: products.productName,
       };
     })
   );
@@ -53,62 +50,56 @@ const getOrderByIdService = async (id) => {
   if (!order) {
     throw { message: "Order not found!", code: 404 };
   }
-  return order;
+
+  const { customerId, locationId, paymentMethodId } = order;
+
+  const [customer, location, paymentMethod, orderProducts] = await Promise.all([
+    Customer.findById(customerId),
+    Location.findById(locationId),
+    PaymentMethod.findById(paymentMethodId),
+    OrderProduct.find({ orderId: order._id }),
+  ]);
+
+  const productPromises = orderProducts.map(async (orderProduct) => {
+    const { productId } = orderProduct;
+    const product = await Product.findById(productId);
+    return {
+      ...product.toObject(),
+    };
+  });
+  const products = await Promise.all(productPromises);
+
+  return {
+    ...order.toObject(),
+    customer: {
+      fullname: customer.fullname,
+      email: customer.email,
+      phone: customer.phone,
+    },
+    location: {
+      address: location.address,
+    },
+    paymentMethod,
+    orderProducts,
+    products,
+  };
 };
 
-const updateOrderService = async (id, order) => {
-  const updatedOrder = await Order.findByIdAndUpdate(
-    id,
-    {
-      $set: {
-        subTotal: order.subTotal,
-        note: order.note,
-      },
-    },
-    {
-      new: true,
-    }
-  );
-  if (!updatedOrder) {
-    throw { message: "Order not found!", code: 404 };
-  }
-  return updatedOrder;
-};
 
 const updateOrderStatusService = async (id, status) => {
-  const updatedOrder = await Order.findByIdAndUpdate(
+  const newOrderStatus = await Order.findByIdAndUpdate(
     id,
     { status },
     { new: true }
   );
-  if (!updatedOrder) {
+  if (!newOrderStatus) {
     throw { message: "Order not found!", code: 404 };
   }
-  return updatedOrder;
+  return newOrderStatus;
 };
-
-// const deleteOrderService = async (id) => {
-//   const deletedOrder = await Order.findByIdAndDelete(id);
-//   if (!deletedOrder) {
-//     throw { message: "Order not found!", code: 404 };
-//   }
-//   const objectId = new mongoose.Types.ObjectId(id);
-//   const orderProducts = await OrderProduct.find({
-//     orderId: id,
-//   });
-//   if (orderProducts.length > 0) {
-//     await OrderProduct.deleteMany({ orderId: objectId });
-//   }
-//   return deletedOrder;
-// };
-
-// payOrderService
 
 module.exports = {
   getAllOrdersService,
   getOrderByIdService,
-
-  updateOrderService,
-  // deleteOrderService,
   updateOrderStatusService,
 };

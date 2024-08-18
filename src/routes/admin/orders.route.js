@@ -2,24 +2,14 @@ const express = require("express");
 const {
   getAllOrders,
   getOrderById,
-
-  // deleteOrder,
   updateOrderStatus,
-  paymenMomo,
-  paymentCallback,
-  paymentCheck,
-  createOrder,
-  // updateOrder,
 } = require("../../controllers/admin/orders.controller");
+const { checkAuth, authorize } = require("../../middlewares/authenToken");
+const role = require("../../utils/role");
 const router = express.Router();
 
-router.get("/", getAllOrders);
-router.get("/:id", getOrderById);
-router.post("/", createOrder);
-// router.put("/:id", updateOrder);
-router.put("/:id/status", updateOrderStatus);
-// router.delete("/:id", deleteOrder);
-router.post("/momo", paymenMomo);
-router.post("/momo/callback", paymentCallback);
-router.post("/momo/check", paymentCheck);
+router.get("/",checkAuth, authorize(role.admin), getAllOrders);
+router.get("/:id",checkAuth, authorize(role.admin), getOrderById);
+router.put("/:id/status",checkAuth, authorize(role.admin), updateOrderStatus);
+
 module.exports = router;
