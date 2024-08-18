@@ -1,20 +1,22 @@
 const jwt = require("jsonwebtoken");
 const { errorHandler } = require("../helper/response");
+const { getToken } = require("../repositories/token.repository");
 
 const checkAuth = async (req, res, next) => {
   try {
     const accessToken = req.headers["authorization"]?.split(" ")[1];
-    console.log(accessToken);
+    console.log("accessToken:", accessToken);
     if (!accessToken) {
       throw { message: "Unauthorized !", code: 401 };
     }
-    const decode = await jwt.verify(
-      accessToken,
-      process.env.ACCESS_TOKEN_SECRET
-    );
-    console.log(decode);
-
+    const decode = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
     if (!decode) throw { message: "Unauthorized !", code: 401 };
+
+    const token = await getToken(decode._id);
+    if (!token) {
+      throw { message: "Unauthorized !", code: 401 };
+    }
+
     req.user = decode;
     req.accessTokenVerify = accessToken;
     next();

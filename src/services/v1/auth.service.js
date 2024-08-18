@@ -1,7 +1,12 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const Customer = require("../../models/customers.model");
 const Token = require("../../models/token.model");
+const {
+  generateAccessToken,
+  deleteToken,
+  createToken,
+} = require("../../repositories/token.repository");
+const { ageToken } = require("../../utils/ageToken");
 
 const registerServic = async (customerBody) => {
   const { fullname, email, password, phone, Dob } = customerBody;
@@ -32,25 +37,19 @@ const loginService = async (email, password) => {
   if (!customer) {
     throw { message: "Email or password is incorrect !", code: 401 };
   }
-  console.log(customer.password);
 
   const isPassword = await bcrypt.compare(password, customer.password);
 
   if (!isPassword) {
     throw { message: "Email or password is incorrect !", code: 401 };
   }
-  const ageToken = 3600;
-  const accessToken = jwt.sign(
-    { _id: customer._id, role: customer.role }, //data input
-    process.env.ACCESS_TOKEN_SECRET, //secret key-
-    { expiresIn: "1h" } //expired time
+  const accessToken = generateAccessToken(
+    customer._id,
+    customer.role,
+    ageToken
   );
 
-  await Token.create({
-    authId: customer._id,
-    accessToken,
-    expiresAtOfToken: new Date(Date.now() + ageToken * 1000),
-  });
+  await createToken(customer._id, accessToken, ageToken);
 
   return {
     accessToken,
@@ -65,13 +64,12 @@ const checkUserLoginService = async (accessTokenVerify) => {
   return isExistingUser;
 };
 
-const logoutService = async (accessToken) => {
+const logoutService = async (customerId, accessToken) => {
   const token = await Token.findOne({ accessToken });
-  
   if (!token) {
     throw { message: "Token not found", code: 404 };
   }
-  await Token.deleteOne({ accessToken });
+  await deleteToken(customerId);
 };
 
 const tokenService = async (accessToken) => {

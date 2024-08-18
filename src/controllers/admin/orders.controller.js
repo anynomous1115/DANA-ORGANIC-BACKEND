@@ -4,12 +4,15 @@ const {
   getOrderByIdService,
   updateOrderStatusService,
 } = require("../../services/admin/orders.service");
+const { paginate } = require("../../utils/pagination");
 
 const getAllOrders = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
-    const orders = await getAllOrdersService(page, limit);
+    const paginate = await paginate(req);
+    const orders = await getAllOrdersService(
+      paginate.startIndex,
+      paginate.limit
+    );
     successHandler(res, orders, "Orders fetched successfully!", 200);
   } catch (error) {
     errorHandler(res, error);
@@ -41,7 +44,6 @@ const updateOrderStatus = async (req, res) => {
     errorHandler(res, error);
   }
 };
-
 
 module.exports = {
   getAllOrders,

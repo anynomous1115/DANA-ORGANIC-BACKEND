@@ -6,12 +6,15 @@ const {
   updateCategoryService,
   deleteCategoryService,
 } = require("../../services/admin/categories.service");
+const { paginate } = require("../../utils/pagination");
 
 const getAllCategories = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
-    const categories = await getAllCategoriesService(page, limit);
+    const paginate = await paginate(req);
+    const categories = await getAllCategoriesService(
+      paginate.startIndex,
+      paginate.limit
+    );
     successHandler(res, categories, "Categories fetched successfully!", 200);
   } catch (error) {
     console.log(error);

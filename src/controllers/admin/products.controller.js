@@ -9,9 +9,11 @@ const {
 
 const getAllProducts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
-    const products = await getAllProductsService(page, limit);
+    const paginate = await paginate(req);
+    const products = await getAllProductsService(
+      paginate.startIndex,
+      paginate.limit
+    );
     successHandler(res, products, "Products fetched successfully!", 200);
   } catch (error) {
     errorHandler(res, error);

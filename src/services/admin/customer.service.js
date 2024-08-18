@@ -1,7 +1,6 @@
 const Customer = require("../../models/customers.model");
 
-const getAllCustomersService = async (page, limit) => {
-  const startIndex = (page - 1) * limit;
+const getAllCustomersService = async (startIndex, limit) => {
   const customers = await Customer.find().skip(startIndex).limit(limit);
   if (customers.length === 0) {
     throw { message: "Customers not found!", code: 404 };

@@ -1,13 +1,12 @@
 const Customer = require("../../models/customers.model");
 const Post = require("../../models/posts.model");
 
-const getAllPostsService = async (page, limit) => {
-  const startIndex = (page - 1) * limit;
-  const blogs = await Post.find().skip(startIndex).limit(limit).exec();
-  if (blogs.length === 0) {
+const getAllPostsService = async (startIndex, limit) => {
+  const posts = await Post.find().skip(startIndex).limit(limit).exec();
+  if (posts.length === 0) {
     throw { message: "Posts not found!", code: 404 };
   }
-  return blogs;
+  return posts;
 };
 
 const getPostByIdService = async (id) => {

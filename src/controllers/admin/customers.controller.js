@@ -4,15 +4,17 @@ const {
   getCustomerService,
   createCustomerService,
   updateCustomerService,
-  deleteCustomerService,
   disableCustomerService,
 } = require("../../services/admin/customer.service");
+const { paginate } = require("../../utils/pagination");
 
 const getAllCustomers = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
-    const customers = await getAllCustomersService(page, limit);
+    const paginate = await paginate(req);
+    const customers = await getAllCustomersService(
+      paginate.startIndex,
+      paginate.limit
+    );
     successHandler(res, customers, "Customers fetched successfully!", 200);
   } catch (error) {
     errorHandler(res, error);

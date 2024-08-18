@@ -3,8 +3,7 @@ const Category = require("../../models/categories.model");
 const OrderProduct = require("../../models/orders-products.model");
 const Product = require("../../models/products.model");
 
-const getAllProductsService = async (page, limit) => {
-  const startIndex = (page - 1) * limit;
+const getAllProductsService = async (startIndex, limit) => {
   const products = await Product.find().skip(startIndex).limit(limit).exec();
   if (products.length === 0) {
     throw { message: "Products not found!", code: 404 };

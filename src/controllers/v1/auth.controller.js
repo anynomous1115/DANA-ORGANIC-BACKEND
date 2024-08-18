@@ -42,7 +42,12 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    await logoutService(req.accessTokenVerify);
+    const { access_token } = req.cookies;
+    if (!access_token) {
+      throw { message: "You are not logged in!", code: 400 };
+    }
+    const { _id } = req.user;
+    await logoutService(_id, access_token);
     return res
       .clearCookie("access_token")
       .status(200)

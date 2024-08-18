@@ -6,12 +6,13 @@ const {
   updatePostService,
   createPostService,
 } = require("../../services/admin/posts.service");
+const { paginate } = require("../../utils/pagination");
 
 const getAllPosts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
-    const posts = await getAllPostsService(page, limit);
+    const paginate = await paginate(req);
+
+    const posts = await getAllPostsService(paginate.startIndex, paginate.limit);
     successHandler(res, posts, "Posts fetched successfully!", 200);
   } catch (error) {
     errorHandler(res, error);

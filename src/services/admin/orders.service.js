@@ -6,8 +6,7 @@ const Order = require("../../models/orders.model");
 const PaymentMethod = require("../../models/paymentMethods.model");
 const Product = require("../../models/products.model");
 
-const getAllOrdersService = async (page, limit) => {
-  const startIndex = (page - 1) * limit;
+const getAllOrdersService = async (startIndex, limit) => {
   const orders = await Order.find().skip(startIndex).limit(limit).exec();
   if (orders.length === 0) {
     throw { message: "Orders not found!", code: 404 };
@@ -84,7 +83,6 @@ const getOrderByIdService = async (id) => {
     products,
   };
 };
-
 
 const updateOrderStatusService = async (id, status) => {
   const newOrderStatus = await Order.findByIdAndUpdate(
