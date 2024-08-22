@@ -72,12 +72,20 @@ const logoutService = async (customerId, accessToken) => {
   await deleteToken(customerId);
 };
 
-const tokenService = async (accessToken) => {
-  const token = await Token.findOne({ accessToken });
-  if (!token) {
-    throw { message: "Token not found", code: 404 };
+const resetPasswordService = async (_id, password, newPassword) => {
+  const customer = await Customer.findOne({ _id });
+  if (!customer) {
+    throw { message: "Customer not found", code: 404 };
   }
-  return token;
+  const isPassword = await bcrypt.compare(password, customer.password);
+  if (!isPassword) {
+    throw { message: "Password is incorrect", code: 401 };
+  }
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+  customer.password = hashedPassword;
+  await customer.save();
+  return customer;
 };
 
 module.exports = {
@@ -85,5 +93,5 @@ module.exports = {
   loginService,
   checkUserLoginService,
   logoutService,
-  tokenService,
+  resetPasswordService,
 };

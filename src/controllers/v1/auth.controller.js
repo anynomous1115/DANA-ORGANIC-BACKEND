@@ -4,6 +4,7 @@ const {
   loginService,
   checkUserLoginService,
   logoutService,
+  resetPasswordService,
 } = require("../../services/v1/auth.service");
 
 const register = async (req, res) => {
@@ -28,6 +29,7 @@ const login = async (req, res) => {
     if (access_token) {
       throw { message: "You are logged in", code: 400 };
     }
+
     const { accessToken, ageToken } = await loginService(email, password);
     res.cookie("access_token", accessToken, {
       httpOnly: true,
@@ -72,9 +74,28 @@ const checkUserLogin = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  try {
+    const { password, newPassword } = req.body;
+    if (password === newPassword) {
+      throw {
+        message: "New password must be different from old password",
+        code: 400,
+      };
+    }
+    const { _id } = req.user;
+    await resetPasswordService(_id, password, newPassword);
+    successHandler(res, {}, "Password reset successfully!", 200);
+  } catch (error) {
+    console.log(error);
+    errorHandler(res, error);
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
   checkUserLogin,
+  resetPassword,
 };

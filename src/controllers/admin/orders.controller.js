@@ -4,11 +4,11 @@ const {
   getOrderByIdService,
   updateOrderStatusService,
 } = require("../../services/admin/orders.service");
-const { paginate } = require("../../utils/pagination");
+const { paginateUtil } = require("../../utils/pagination");
 
 const getAllOrders = async (req, res) => {
   try {
-    const paginate = await paginate(req);
+    const paginate = await paginateUtil(req);
     const orders = await getAllOrdersService(
       paginate.startIndex,
       paginate.limit

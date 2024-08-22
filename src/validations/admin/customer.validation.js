@@ -5,8 +5,8 @@ const customerValidation = (data) => {
   const customerSchema = Joi.object({
     fullname: Joi.string().allow(null),
     email: Joi.string().required().email().lowercase(),
+    phone: Joi.string().required(),
     password: Joi.string().required().custom(password),
-    rePassword: Joi.string().required().valid(Joi.ref("password")),
     Dob: Joi.date().required(),
   });
   return customerSchema.validate(data);

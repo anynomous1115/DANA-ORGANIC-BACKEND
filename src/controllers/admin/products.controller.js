@@ -6,10 +6,11 @@ const {
   updateProductService,
   deleteProductService,
 } = require("../../services/admin/products.service");
+const { paginateUtil } = require("../../utils/pagination");
 
 const getAllProducts = async (req, res) => {
   try {
-    const paginate = await paginate(req);
+    const paginate = await paginateUtil(req);
     const products = await getAllProductsService(
       paginate.startIndex,
       paginate.limit

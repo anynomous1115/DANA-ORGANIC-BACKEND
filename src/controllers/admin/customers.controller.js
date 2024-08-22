@@ -6,11 +6,11 @@ const {
   updateCustomerService,
   disableCustomerService,
 } = require("../../services/admin/customer.service");
-const { paginate } = require("../../utils/pagination");
+const { paginateUtil } = require("../../utils/pagination");
 
 const getAllCustomers = async (req, res) => {
   try {
-    const paginate = await paginate(req);
+    const paginate = await paginateUtil(req);
     const customers = await getAllCustomersService(
       paginate.startIndex,
       paginate.limit

@@ -6,8 +6,8 @@ const getToken = async (authId) => {
   if (!token) {
     return null;
   }
-  if (token.expiresAtOfToken < new Date()) {
-    await deleteToken(authId);
+  if (token.expiresAtOfToken <= new Date()) {
+    await deleteToken(token._id);
     return null;
   }
   return token;
@@ -28,8 +28,8 @@ const createToken = async (authId, accessToken, ageToken) => {
   return newToken;
 };
 
-const deleteToken = async (authId) => {
-  await Token.deleteOne({ authId });
+const deleteToken = async (data) => {
+  await Token.deleteOne({ _id: data });
   return;
 };
 

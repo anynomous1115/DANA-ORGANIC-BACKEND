@@ -23,9 +23,9 @@ const createCustomerService = async (customer) => {
   if (customerExist) {
     throw { message: "Customer already exists!", code: 400 };
   }
-
-  const newCustomer = new Customer(customer);
-  return await newCustomer.save();
+  const newCustomer = { ...customer, ...{ role: "customer" } };
+  const addNewCustomer = new Customer(newCustomer);
+  return await addNewCustomer.save();
 };
 
 const updateCustomerService = async (id, customer) => {

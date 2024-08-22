@@ -6,11 +6,11 @@ const {
   updateCategoryService,
   deleteCategoryService,
 } = require("../../services/admin/categories.service");
-const { paginate } = require("../../utils/pagination");
+const { paginateUtil } = require("../../utils/pagination");
 
 const getAllCategories = async (req, res) => {
   try {
-    const paginate = await paginate(req);
+    const paginate = await paginateUtil(req);
     const categories = await getAllCategoriesService(
       paginate.startIndex,
       paginate.limit

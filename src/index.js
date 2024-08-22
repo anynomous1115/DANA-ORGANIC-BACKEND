@@ -5,6 +5,7 @@ const adminRoutes = require("./routes/admin");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const { connectDB } = require("./configs/database");
+const cors = require("cors");
 
 const port = process.env.PORT || 3030;
 
@@ -12,6 +13,12 @@ connectDB();
 
 dotenv.config();
 
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Thay thế bằng URL của ứng dụng React
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
 app.use(express.urlencoded());

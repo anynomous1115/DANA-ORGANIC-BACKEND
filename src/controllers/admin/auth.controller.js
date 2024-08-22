@@ -1,5 +1,5 @@
 const { successHandler, errorHandler } = require("../../helper/response");
-const { loginAdminService } = require("../../services/admin/auth.service");
+const { loginAdminService, logoutAdimService } = require("../../services/admin/auth.service");
 
 const loginAdmin = async (req, res) => {
   try {
@@ -17,6 +17,25 @@ const loginAdmin = async (req, res) => {
   }
 };
 
+const logoutAdmin = async (req, res) => {
+  try {
+    const { access_token } = req.cookies;
+    if (!access_token) {
+      throw { message: "You are not logged in!", code: 400 };
+    }
+    const { _id } = req.user;
+    await logoutAdimService(_id, access_token);
+    return res
+      .clearCookie("access_token")
+      .status(200)
+      .json({ code: 200, message: "Successfully logged out!" });
+  } catch (error) {
+    console.error(error);
+    errorHandler(res, error);
+  }
+};
+
 module.exports = {
   loginAdmin,
+  logoutAdmin,
 };
