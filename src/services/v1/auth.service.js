@@ -17,6 +17,11 @@ const registerServic = async (customerBody) => {
     throw { message: "Customer already exists!", code: 409 };
   }
 
+  const isExistingPhone = await Customer.findOne({ phone });
+  if (isExistingPhone) {
+    throw { message: "Phone number already exists!", code: 409 };
+  }
+
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
