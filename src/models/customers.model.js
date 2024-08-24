@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 
 // Define the Customer schema
 const CustomerSchema = new mongoose.Schema(
@@ -67,8 +66,7 @@ const CustomerSchema = new mongoose.Schema(
 );
 
 // Create a unique index on the email field
-CustomerSchema.index({ email: 1 }, { unique: true });
-
+CustomerSchema.index({ email: 1, phone: 1 }, { unique: true });
 // Create the Customer model
 const Customer = mongoose.model("customers", CustomerSchema);
 

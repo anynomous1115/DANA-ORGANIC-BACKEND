@@ -1,5 +1,8 @@
 const { successHandler, errorHandler } = require("../../helper/response");
-const { loginAdminService, logoutAdimService } = require("../../services/admin/auth.service");
+const {
+  loginAdminService,
+  logoutAdimService,
+} = require("../../services/admin/auth.service");
 
 const loginAdmin = async (req, res) => {
   try {
@@ -10,7 +13,7 @@ const loginAdmin = async (req, res) => {
       httpOnly: true,
       maxAge: ageToken * 1000,
     });
-    successHandler(res, {}, "Logged in successfully!", 200);
+    successHandler(res, { accessToken }, "Logged in successfully!", 200);
   } catch (error) {
     console.error(error);
     errorHandler(res, error);

@@ -6,6 +6,7 @@ const {
   logoutService,
   resetPasswordService,
 } = require("../../services/v1/auth.service");
+const { createCartsService } = require("../../services/v1/carts.service");
 
 const register = async (req, res) => {
   try {
@@ -15,6 +16,7 @@ const register = async (req, res) => {
       return;
     }
     const customer = await registerServic(req.body);
+    await createCartsService(customer._id);
     successHandler(res, customer, "Customer registered successfully!", 201);
   } catch (error) {
     console.log(error);
@@ -35,7 +37,7 @@ const login = async (req, res) => {
       httpOnly: true,
       maxAge: ageToken * 1000,
     });
-    successHandler(res, {}, "Logged in successfully!", 200);
+    successHandler(res, { accessToken }, "Logged in successfully!", 200);
   } catch (error) {
     console.log(error);
     errorHandler(res, error);
