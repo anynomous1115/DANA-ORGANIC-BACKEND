@@ -1,12 +1,18 @@
 const Category = require("../../models/categories.model");
 
-const getAllCategoriesService = async (startIndex, limit) => {
+const getAllCategoriesService = async (page, limit) => {
+  const startIndex = (page - 1) * limit;
   const categories = await Category.find().skip(startIndex).limit(limit).exec();
+  const totalCount = await Category.countDocuments();
   if (categories.length === 0) {
     throw { message: "Categories not found!", code: 404 };
   }
+  console.log(categories, totalCount);
 
-  return categories;
+  return {
+    categories,
+    totalCount,
+  };
 };
 
 const getCategoryService = async (id) => {

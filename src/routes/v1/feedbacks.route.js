@@ -8,7 +8,7 @@ const {
 } = require("../../controllers/v1/feedbacks.controller");
 const router = express.Router();
 
-router.get("/:id", checkAuth, authorize(role.customer), getAllFeedbacks);
+router.get("/:id", getAllFeedbacks);
 router.post(
   "/:id/send-feedback",
   checkAuth,

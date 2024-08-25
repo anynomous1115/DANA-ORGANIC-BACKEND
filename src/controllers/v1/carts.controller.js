@@ -12,7 +12,7 @@ const createCarts = async (req, res) => {
     const cart = await createCartsService(_id);
     successHandler(res, cart, "Cart created successfully", 201);
   } catch (error) {
-    errorHandler(error, res);
+    errorHandler(res, error);
   }
 };
 const getCarts = async (req, res) => {
@@ -21,7 +21,7 @@ const getCarts = async (req, res) => {
     const cart = await getCartsService(_id);
     successHandler(res, cart, "Cart retrieved successfully", 200);
   } catch (error) {
-    errorHandler(error, res);
+    errorHandler(res, error);
   }
 };
 
@@ -37,27 +37,22 @@ const createProductInCart = async (req, res) => {
     );
     successHandler(res, cart, "Product added to cart successfully", 201);
   } catch (error) {
-    errorHandler(error, res);
+    errorHandler(res, error);
   }
 };
 
 const updateProductInCart = async (req, res) => {
   try {
-    const { _id } = req.user;
-    const { productId, quantity, price } = req.body;
-    if (typeof quantity !== "number" || typeof price !== "number") {
+    const id = req.params.id;
+    const { quantity } = req.body;
+    if (typeof quantity !== "number") {
       throw {
         code: 400,
-        message: "Quantity and price must be a number",
+        message: "Quantity must be a number",
       };
     }
 
-    const productCart = await updateProductInCartService(
-      productId,
-      _id,
-      quantity,
-      price
-    );
+    const productCart = await updateProductInCartService(id, quantity);
     successHandler(
       res,
       productCart,
@@ -65,15 +60,14 @@ const updateProductInCart = async (req, res) => {
       200
     );
   } catch (error) {
-    errorHandler(error, res);
+    errorHandler(res, error);
   }
 };
 
 const deleteProductInCart = async (req, res) => {
   try {
-    const { _id } = req.user;
-    const { productId } = req.body;
-    const productCart = await deleteProductInCartService(productId, _id);
+    const id = req.params.id;
+    const productCart = await deleteProductInCartService(id);
     successHandler(
       res,
       productCart,
@@ -81,7 +75,7 @@ const deleteProductInCart = async (req, res) => {
       200
     );
   } catch (error) {
-    errorHandler(error, res);
+    errorHandler(res, error);
   }
 };
 

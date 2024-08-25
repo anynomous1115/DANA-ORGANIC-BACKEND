@@ -6,9 +6,6 @@ const getLocationByCustomerService = async (customerId) => {
 };
 
 const createLocationByCustomerService = async (customerId, address) => {
-  console.log(address);
-  console.log(customerId);
-
   const location = await Location.create({
     customerId: customerId,
     address: address,

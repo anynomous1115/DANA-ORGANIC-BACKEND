@@ -8,9 +8,7 @@ const productsValidation = (data) => {
     description: Joi.string().required(),
     price: Joi.number().required(),
     categoryId: Joi.string().required(),
-    weight: Joi.number().required(),
     sold: Joi.number().required(),
-    quantity: Joi.number().required(),
   });
   return productsSchema.validate(data);
 };

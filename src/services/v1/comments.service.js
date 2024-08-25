@@ -1,18 +1,22 @@
 const Comment = require("../../models/comments.model");
 
-const getAllCommentsService = async (postId, startIndex, limit) => {
+const getAllCommentsService = async (postId, page, limit) => {
+  const startIndex = (page - 1) * limit;
   const comments = await Comment.find({ postId })
     .sort({ createdAt: -1 })
     .skip(startIndex)
     .limit(limit);
-
+  const totalCount = await Comment.countDocuments({ postId });
   if (!comments) {
     throw {
       code: 404,
       message: "Comments not found!",
     };
   }
-  return comments;
+  return {
+    comments,
+    totalCount,
+  };
 };
 
 const sendCommentService = async (postId, customerId, contents) => {

@@ -17,9 +17,14 @@ router.post(
   authorize(role.customer),
   createProductInCart
 );
-router.put("/update", checkAuth, authorize(role.customer), updateProductInCart);
+router.put(
+  "/update/:id",
+  checkAuth,
+  authorize(role.customer),
+  updateProductInCart
+);
 router.delete(
-  "/delete",
+  "/delete/:id",
   checkAuth,
   authorize(role.customer),
   deleteProductInCart

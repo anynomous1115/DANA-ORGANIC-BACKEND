@@ -55,17 +55,8 @@ const createProductInCartService = async (
   return productCart;
 };
 
-const updateProductInCartService = async (
-  productId,
-  customerId,
-  quantity,
-  price
-) => {
-  const cart = await Cart.findOne({ customerId: customerId });
-  const productCart = await ProductCart.findOne({
-    productId: productId,
-    cartId: cart._id,
-  });
+const updateProductInCartService = async (productsCartsId, quantity) => {
+  const productCart = await ProductCart.findById(productsCartsId);
   if (!productCart) {
     throw {
       code: 400,
@@ -73,27 +64,18 @@ const updateProductInCartService = async (
     };
   }
   productCart.quantity = quantity;
-  productCart.price = price;
   await productCart.save();
   return productCart;
 };
 
-const deleteProductInCartService = async (productId, customerId) => {
-  const cart = await Cart.findOne({ customerId: customerId });
-  const productCart = await ProductCart.findOne({
-    productId: productId,
-    cartId: cart._id,
-  });
+const deleteProductInCartService = async (productsCartsId) => {
+  const productCart = await ProductCart.findByIdAndDelete(productsCartsId);
   if (!productCart) {
     throw {
       code: 400,
       message: "Product not found in cart",
     };
   }
-  await ProductCart.deleteOne({
-    productId: productId,
-    cartId: cart._id,
-  });
   return productCart;
 };
 

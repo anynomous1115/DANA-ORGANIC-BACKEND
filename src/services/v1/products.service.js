@@ -5,12 +5,17 @@ const getLatestProductsService = async () => {
   return products;
 };
 
-const getAllProductsService = async (startIndex, limit) => {
+const getAllProductsService = async (page, limit) => {
+  const startIndex = (page - 1) * limit;
   const products = await Product.find().skip(startIndex).limit(limit).exec();
+  const totalCount = await Product.countDocuments();
   if (products.length === 0) {
     throw { message: "Products not found!", code: 404 };
   }
-  return products;
+  return {
+    products,
+    totalCount,
+  };
 };
 
 const getSimilarProductsService = async (productId) => {

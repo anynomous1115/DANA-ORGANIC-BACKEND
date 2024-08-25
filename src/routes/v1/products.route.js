@@ -20,7 +20,6 @@ router.get("/:id/similar", getSimilarProducts);
 
 router.get(
   "/:id/recommended",
-
   getRecommendedProducts
 );
 

@@ -1,12 +1,18 @@
+const Comment = require("../../models/comments.model");
 const Customer = require("../../models/customers.model");
 const Post = require("../../models/posts.model");
 
-const getAllPostsService = async (startIndex, limit) => {
+const getAllPostsService = async (page, limit) => {
+  const startIndex = (page - 1) * limit;
   const posts = await Post.find().skip(startIndex).limit(limit).exec();
+  const totalCount = await Post.countDocuments();
   if (posts.length === 0) {
     throw { message: "Posts not found!", code: 404 };
   }
-  return posts;
+  return {
+    posts,
+    totalCount,
+  };
 };
 
 const getPostByIdService = async (id) => {
@@ -14,24 +20,30 @@ const getPostByIdService = async (id) => {
   if (!post) {
     throw { message: "Post not found!", code: 404 };
   }
-
   const commentsents = await Comment.find({ postId: post._id }).exec();
-  if (comments.length === 0) {
-    throw { message: "Comments not found!", code: 404 };
-  }
-  const comments = commentsents.map((comment) => {
-    const customer = Customer.findById(comment.customerId).exec();
-    if (!customer) {
-      throw { message: "Customer not found!", code: 404 };
-    }
+  if (commentsents.length > 0) {
+    const comments = await Promise.all(
+      commentsents.map(async (comment) => {
+        const customer = await Customer.findById(comment.customerId).exec();
+        console.log(customer);
+
+        if (!customer) {
+          throw { message: "Customer not found!", code: 404 };
+        }
+        return {
+          ...comment.toObject(),
+          customer: customer.fullname,
+        };
+      })
+    );
     return {
-      ...comment,
-      customer,
+      post,
+      comments,
     };
-  });
+  }
   return {
     post,
-    comments,
+    commentsents,
   };
 };
 

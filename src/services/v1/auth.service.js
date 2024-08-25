@@ -42,7 +42,9 @@ const loginService = async (email, password) => {
   if (!customer) {
     throw { message: "Email or password is incorrect !", code: 401 };
   }
-
+  if (customer.disable === true) {
+    throw { message: "Your account has been disabled", code: 401 };
+  }
   const isPassword = await bcrypt.compare(password, customer.password);
 
   if (!isPassword) {

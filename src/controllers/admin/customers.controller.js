@@ -10,12 +10,19 @@ const { paginateUtil } = require("../../utils/pagination");
 
 const getAllCustomers = async (req, res) => {
   try {
-    const paginate = await paginateUtil(req);
-    const customers = await getAllCustomersService(
-      paginate.startIndex,
-      paginate.limit
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const { customers, totalCount } = await getAllCustomersService(page, limit);
+    const paginate = await paginateUtil(req, totalCount);
+    successHandler(
+      res,
+      {
+        paginate,
+        customers,
+      },
+      "Customers fetched successfully!",
+      200
     );
-    successHandler(res, customers, "Customers fetched successfully!", 200);
   } catch (error) {
     errorHandler(res, error);
   }

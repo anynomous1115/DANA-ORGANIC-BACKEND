@@ -10,12 +10,19 @@ const { paginateUtil } = require("../../utils/pagination");
 
 const getAllProducts = async (req, res) => {
   try {
-    const paginate = await paginateUtil(req);
-    const products = await getAllProductsService(
-      paginate.startIndex,
-      paginate.limit
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const { data, totalCount } = await getAllProductsService(page, limit);
+    const paginate = await paginateUtil(req, totalCount);
+    successHandler(
+      res,
+      {
+        paginate,
+        data,
+      },
+      "Products fetched successfully!",
+      200
     );
-    successHandler(res, products, "Products fetched successfully!", 200);
   } catch (error) {
     errorHandler(res, error);
   }
@@ -60,6 +67,8 @@ const deleteProduct = async (req, res) => {
     const deletedProduct = await deleteProductService(productId);
     successHandler(res, deletedProduct, "Product deleted successfully!", 200);
   } catch (error) {
+    console.log(error);
+
     errorHandler(res, error);
   }
 };

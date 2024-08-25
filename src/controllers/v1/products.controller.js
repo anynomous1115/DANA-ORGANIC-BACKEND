@@ -19,13 +19,17 @@ const getLatestProducts = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   try {
-    const paginate = await paginateUtil(req);
-    const products = await getAllProductsService(
-      paginate.startIndex,
-      paginate.limit
-    );
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const { products, totalCount } = await getAllProductsService(page, limit);
+    const paginate = await paginateUtil(req, totalCount);
 
-    successHandler(res, products, "Get all products successfully!", 200);
+    successHandler(
+      res,
+      { products, paginate },
+      "Get all products successfully!",
+      200
+    );
   } catch (error) {
     errorHandler(res, error);
   }

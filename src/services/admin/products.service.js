@@ -1,33 +1,47 @@
+const { default: mongoose } = require("mongoose");
 const Category = require("../../models/categories.model");
 const OrderProduct = require("../../models/orders-products.model");
 const Product = require("../../models/products.model");
+const { getCategoryService } = require("./categories.service");
 
-const getAllProductsService = async (startIndex, limit) => {
+const getAllProductsService = async (page, limit) => {
+  const startIndex = (page - 1) * limit;
   const products = await Product.find().skip(startIndex).limit(limit).exec();
+  const totalCount = await Product.countDocuments();
   if (products.length === 0) {
     throw { message: "Products not found!", code: 404 };
   }
 
   const data = await Promise.all(
     products.map(async (product) => {
-      const { categoriesId } = product;
-      const category = await Category.findById(categoriesId);
+      const { categoryId } = product;
+      const category = await Category.findById(categoryId);
+      console.log(category);
+      console.log(categoryId);
+
       return {
         ...product.toObject(),
         category: category,
       };
     })
   );
-
-  return data;
+  return {
+    data,
+    totalCount,
+  };
 };
 
-const getProductService = async (id) => {
-  const product = await Product.findById(id).exec();
-  const category = await Category.findById(product.categoryId);
-  if (!product && !category) {
-    throw { message: "Product or Category not found!", code: 404 };
+const getProductService = async (productId) => {
+  const product = await Product.findById(productId).exec();
+  if (!product) {
+    throw { message: "Product not found!", code: 404 };
   }
+  const { categoryId } = product;
+  const category = await getCategoryService(categoryId);
+  if (!category) {
+    throw { message: "Category not found!", code: 404 };
+  }
+
   const newProductwProduct = {
     ...product.toObject(),
     categoryName: category.categoryName,
@@ -58,9 +72,9 @@ const updateProductService = async (id, product) => {
 };
 
 const deleteProductService = async (id) => {
-  const checkOrderProducts = await OrderProduct.find(id);
-  if (checkOrderProducts) {
-    throw { message: "Product is still in the cart", code: 404 };
+  const checkOrderProducts = await OrderProduct.find({ productId: id });
+  if (checkOrderProducts.length > 0) {
+    throw { message: "Product is still in the order", code: 404 };
   }
   const deletedProduct = await Product.findByIdAndDelete(id);
   if (!deletedProduct) {

@@ -9,13 +9,21 @@ const { paginateUtil } = require("../../utils/pagination");
 const getAllFeedbacks = async (req, res) => {
   try {
     const productId = req.params.id;
-    const paginate = await paginateUtil(req);
-    const feedbacks = await getAllFeedbacksService(
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const { feedbacks, totalCount } = await getAllFeedbacksService(
       productId,
-      paginate.startIndex,
-      paginate.limit
+      page,
+      limit
     );
-    successHandler(res, feedbacks, "Feedbacks fetched successfully!", 200);
+    const paginate = await paginateUtil(req, totalCount);
+
+    successHandler(
+      res,
+      { feedbacks, paginate },
+      "Feedbacks fetched successfully!",
+      200
+    );
   } catch (error) {
     errorHandler(res, error);
   }

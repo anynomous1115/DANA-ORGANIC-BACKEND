@@ -1,9 +1,14 @@
 const Post = require("../../models/posts.model");
 
-const getAllPostsService = async (startIndex, limit) => {
+const getAllPostsService = async (page, limit) => {
+  const startIndex = (page - 1) * limit;
   const posts = await Post.find().skip(startIndex).limit(limit);
+  const totalCount = await Post.countDocuments();
   if (posts.length === 0) throw { message: "Posts not found!", code: 404 };
-  return posts;
+  return {
+    posts,
+    totalCount,
+  };
 };
 
 const getPostByIdService = async (postId) => {

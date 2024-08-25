@@ -9,13 +9,20 @@ const { paginateUtil } = require("../../utils/pagination");
 const getAllComments = async (req, res) => {
   try {
     const postId = req.params.id;
-    const paginate = await paginateUtil(req);
-    const comments = await getAllCommentsService(
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const { comments, totalCount } = await getAllCommentsService(
       postId,
-      paginate.startIndex,
-      paginate.limit
+      page,
+      limit
     );
-    successHandler(res, comments, "Comments fetched successfully!", 200);
+    const paginate = await paginateUtil(req, totalCount);
+    successHandler(
+      res,
+      { comments, paginate },
+      "Comments fetched successfully!",
+      200
+    );
   } catch (error) {
     errorHandler(res, error);
   }

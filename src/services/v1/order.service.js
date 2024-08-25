@@ -16,11 +16,11 @@ const createOrderService = async (order) => {
   } = order;
   const newOrder = new Order();
 
-   // get location by name
+  // get location by name
   const paymentMethod = await PaymentMethod.findOne({
     nameMethod: paymentMethodId,
   });
- 
+
   newOrder.customerId = customerId;
   console.log(1234);
 
@@ -32,15 +32,14 @@ const createOrderService = async (order) => {
   newOrder.paymentStatus = paymentStatus;
 
   await newOrder.save();
- 
 
   await Promise.all(
     orderItems.map(async (orderItem) => {
       const { productId, quantity } = orderItem;
       // get product
       const product = await Product.findById(productId);
-       const orderProduct = new OrderProduct();
-       orderProduct.orderId = newOrder._id;
+      const orderProduct = new OrderProduct();
+      orderProduct.orderId = newOrder._id;
       orderProduct.productId = productId;
       orderProduct.quantity = quantity;
       // totalPrice
@@ -68,9 +67,8 @@ const payOrderService = async (amount, orderId, paymentMethod) => {
   let lang = "vi";
 
   let createOrder = await Order.findOne({ _id: orderId });
-  
+
   if (createOrder) {
-     
     createOrder.id_payment = app_trans_id;
     await createOrder.save();
   }
@@ -195,7 +193,6 @@ const payOrderServiceCheck = async (orderId) => {
 };
 module.exports = {
   createOrderService,
-
   payOrderService,
   payOrderServiceCallback,
   payOrderServiceCheck,

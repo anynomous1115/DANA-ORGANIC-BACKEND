@@ -10,12 +10,22 @@ const { paginateUtil } = require("../../utils/pagination");
 
 const getAllCategories = async (req, res) => {
   try {
-    const paginate = await paginateUtil(req);
-    const categories = await getAllCategoriesService(
-      paginate.startIndex,
-      paginate.limit
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const { categories, totalCount } = await getAllCategoriesService(
+      page,
+      limit
     );
-    successHandler(res, categories, "Categories fetched successfully!", 200);
+    const paginate = await paginateUtil(req, totalCount);
+    successHandler(
+      res,
+      {
+        paginate,
+        categories,
+      },
+      "Categories fetched successfully!",
+      200
+    );
   } catch (error) {
     console.log(error);
     errorHandler(res, error);

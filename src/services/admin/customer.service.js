@@ -1,11 +1,16 @@
 const Customer = require("../../models/customers.model");
 
-const getAllCustomersService = async (startIndex, limit) => {
+const getAllCustomersService = async (page, limit) => {
+  const startIndex = (page - 1) * limit;
   const customers = await Customer.find().skip(startIndex).limit(limit);
+  const totalCount = await Customer.countDocuments();
   if (customers.length === 0) {
     throw { message: "Customers not found!", code: 404 };
   }
-  return customers;
+  return {
+    customers,
+    totalCount,
+  };
 };
 
 const getCustomerService = async (id) => {
@@ -32,13 +37,6 @@ const updateCustomerService = async (id, customer) => {
   const customerExist = await Customer.findById(id).exec();
   if (!customerExist) {
     throw { message: "Customer not found!", code: 404 };
-  }
-
-  const emailExist = await Customer.findOne({
-    email: customer.email,
-  }).exec();
-  if (emailExist) {
-    throw { message: "Email already exists!", code: 400 };
   }
 
   const updatedCustomer = await Customer.findByIdAndUpdate(id, customer, {
