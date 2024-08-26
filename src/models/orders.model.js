@@ -21,13 +21,10 @@ const OrderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    shipFee: {
-      type: Number,
-      required: true,
-    },
     status: {
       type: Number,
-      required: 1,
+      required: false,
+      default: 1,
     },
     note: {
       type: String,

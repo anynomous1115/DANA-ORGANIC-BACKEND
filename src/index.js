@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const { connectDB } = require("./configs/database");
 const cors = require("cors");
+// const cloudinary = require("cloudinary").v2;
 
 const port = process.env.PORT || 3030;
 
@@ -19,6 +20,8 @@ app.use(
     credentials: true,
   })
 );
+
+// app.use(cloudinary());
 app.use(cookieParser());
 
 app.use(express.urlencoded());

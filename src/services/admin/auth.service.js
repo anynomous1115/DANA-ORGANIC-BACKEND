@@ -39,7 +39,10 @@ const logoutAdimService = async (authId, accessToken) => {
   if (!token) {
     throw { message: "Token not found", code: 404 };
   }
-  await deleteToken(authId);
+  console.log(token);
+
+  const tokenDeleted = await deleteToken(token._id);
+  return tokenDeleted;
 };
 
 module.exports = {

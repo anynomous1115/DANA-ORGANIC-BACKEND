@@ -55,10 +55,11 @@ const createCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
-    const category = req.body;
-    const updatedCategory = await updateCategoryService(categoryId, category);
+    const { body } = req.body;
+    const updatedCategory = await updateCategoryService(categoryId, body);
     successHandler(res, updatedCategory, "Category updated successfully!", 200);
   } catch (error) {
+    console.log(error);
     errorHandler(res, error);
   }
 };

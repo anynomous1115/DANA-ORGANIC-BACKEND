@@ -35,14 +35,18 @@ const createCategoryService = async (category) => {
   return await newCategory.save();
 };
 
-const updateCategoryService = async (id, category) => {
-  const updatedCategory = await Category.findByIdAndUpdate(id, category, {
-    new: true,
-  });
-  if (!updatedCategory) {
+const updateCategoryService = async (id, categoryName) => {
+  const cleanedData = categoryName.split('"').join("");
+
+  const category = await Category.findById(id).exec();
+  if (!category) {
     throw { message: "Category not found!", code: 404 };
   }
-  return updatedCategory;
+  category.categoryName = cleanedData;
+  await category.save();
+
+  console.log(category);
+  return category;
 };
 
 const deleteCategoryService = async (id) => {

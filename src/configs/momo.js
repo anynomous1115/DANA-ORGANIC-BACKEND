@@ -11,4 +11,5 @@ const configMomo = {
     autoCapture: true,
     lang: "vi",
 };
+
 module.exports = configMomo;

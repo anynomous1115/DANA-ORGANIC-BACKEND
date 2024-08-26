@@ -76,7 +76,7 @@ const logoutService = async (customerId, accessToken) => {
   if (!token) {
     throw { message: "Token not found", code: 404 };
   }
-  await deleteToken(customerId);
+  await deleteToken(token._id);
 };
 
 const resetPasswordService = async (_id, password, newPassword) => {

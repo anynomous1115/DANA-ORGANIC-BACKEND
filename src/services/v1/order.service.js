@@ -1,41 +1,73 @@
+const configMomo = require("../../configs/momo");
+const Cart = require("../../models/carts.model");
+const Customer = require("../../models/customers.model");
+const Location = require("../../models/locations.model");
 const OrderProduct = require("../../models/orders-products.model");
 const Order = require("../../models/orders.model");
 const PaymentMethod = require("../../models/paymentMethods.model");
+const ProductCart = require("../../models/products-carts.model");
 const Product = require("../../models/products.model");
 const axios = require("axios");
-const createOrderService = async (order) => {
-  const {
-    orderItems,
-    subTotal,
-    note,
-    customerId,
-    locationId,
-    paymentMethodId,
-    status,
-    paymentStatus,
-  } = order;
-  const newOrder = new Order();
+const crypto = require("crypto");
 
-  // get location by name
-  const paymentMethod = await PaymentMethod.findOne({
-    nameMethod: paymentMethodId,
+const getInfoOrderService = async (customerId) => {
+  const cart = await Cart.findOne({ customerId: customerId });
+  const infoCustomer = await Customer.findById(customerId).select("-password");
+  const location = await Location.findById(customerId);
+  const productCarts = await ProductCart.find({ cartId: cart._id });
+  const paymentMethod = await PaymentMethod.find();
+  let subTotal = 0;
+  await Promise.all(
+    productCarts.map(async (productCart) => {
+      subTotal += productCart.price * productCart.quantity;
+    })
+  );
+  const productsCarts = await Promise.all(
+    productCarts.map(async (productCart) => {
+      const product = await Product.findById(productCart.productId);
+      return {
+        productName: product.productName,
+        productPrice: product.price,
+        productQuantity: productCart.quantity,
+        productId: product._id,
+        totalPrice: productCart.price * productCart.quantity,
+      };
+    })
+  );
+
+  return {
+    infoCustomer,
+    location,
+    paymentMethod,
+    subTotal,
+    productsCarts,
+  };
+};
+
+const createOrderService = async (order, customerId) => {
+  const { subTotal, note, address, paymentMethodId } = order;
+  console.log(subTotal);
+
+  const newOrder = new Order();
+  const location = await Location.create({
+    customerId: customerId,
+    address: address,
   });
+  console.log(paymentMethodId);
 
   newOrder.customerId = customerId;
-  console.log(1234);
-
-  newOrder.locationId = locationId;
-  newOrder.paymentMethodId = paymentMethod._id;
+  newOrder.locationId = location._id;
+  newOrder.paymentMethodId = paymentMethodId;
   newOrder.subTotal = subTotal;
-  newOrder.status = status;
   newOrder.note = note;
-  newOrder.paymentStatus = paymentStatus;
 
   await newOrder.save();
 
+  const cart = await Cart.findOne({ customerId: customerId });
+  const productCarts = await ProductCart.find({ cartId: cart._id });
   await Promise.all(
-    orderItems.map(async (orderItem) => {
-      const { productId, quantity } = orderItem;
+    productCarts.map(async (productCart) => {
+      const { productId, quantity } = productCart;
       // get product
       const product = await Product.findById(productId);
       const orderProduct = new OrderProduct();
@@ -47,17 +79,22 @@ const createOrderService = async (order) => {
       await orderProduct.save();
     })
   );
-
+  await ProductCart.deleteMany({ cartId: cart._id });
   return newOrder;
 };
 
-const payOrderService = async (amount, orderId, paymentMethod) => {
+const payOrderService = async (orderId) => {
+  const order = await Order.findById(orderId);
+  const { subTotal } = order;
+  let amount = subTotal;
+  console.log(amount);
+
   let accessKey = "F8BBA842ECF85";
   let secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
   let partnerCode = "MOMO";
   let ipnUrl = `https://f5fd-14-191-113-247.ngrok-free.app/v1/orders/momo/callback`;
   let app_trans_id = partnerCode + new Date().getTime();
-  let redirectUrl = `http://localhost:3000/order/payment?orderId=${app_trans_id}&paymentMethod=${paymentMethod}&orderIdpayment=${app_trans_id}`;
+  let redirectUrl = `http://localhost:3000/order/payment?orderId=${orderId}&orderIdpayment=${app_trans_id}`;
   let orderInfo = `Oganic for the order ${app_trans_id} with MoMo`;
   let requestId = app_trans_id;
   let requestType = "payWithMethod";
@@ -138,24 +175,16 @@ const payOrderService = async (amount, orderId, paymentMethod) => {
     return error.message;
   }
 };
+
 const payOrderServiceCallback = async (data) => {
-  if (data.resultCode === 0) {
-    const createOrder = await Order.findOne({
-      id_payment: data.orderId,
-    });
-    if (createOrder) {
-      createOrder.paymentStatus = "success";
-      createOrder.status = true;
-      await createOrder.save();
-    }
-  } else {
-    const createOrder = await Order.findOne({
-      $where: { id_payment: data.orderId },
-    });
-    if (createOrder) {
-      createOrder.paymentStatus = "fail";
-      await createOrder.save();
-    }
+  console.log(data);
+
+  const createOrder = await Order.findOne({
+    id_payment: data.orderIdpayment,
+  });
+  if (createOrder) {
+    createOrder.status = 2;
+    await createOrder.save();
   }
   return data;
 };
@@ -196,4 +225,5 @@ module.exports = {
   payOrderService,
   payOrderServiceCallback,
   payOrderServiceCheck,
+  getInfoOrderService,
 };

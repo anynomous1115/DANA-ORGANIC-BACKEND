@@ -1,5 +1,6 @@
 const Cart = require("../../models/carts.model");
 const ProductCart = require("../../models/products-carts.model");
+const Product = require("../../models/products.model");
 
 const createCartsService = async (customerId) => {
   const checkExist = await Cart.findOne({ customerId: customerId });
@@ -44,6 +45,10 @@ const createProductInCartService = async (
   quantity,
   price
 ) => {
+  const checkProduct = await Product.findOne({
+    productId: productId,
+  });
+
   const cart = await Cart.findOne({ customerId: customerId });
 
   const productCart = await ProductCart.create({

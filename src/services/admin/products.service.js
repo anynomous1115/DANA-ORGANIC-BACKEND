@@ -38,9 +38,6 @@ const getProductService = async (productId) => {
   }
   const { categoryId } = product;
   const category = await getCategoryService(categoryId);
-  if (!category) {
-    throw { message: "Category not found!", code: 404 };
-  }
 
   const newProductwProduct = {
     ...product.toObject(),

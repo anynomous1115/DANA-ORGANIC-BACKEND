@@ -23,13 +23,7 @@ router.post(
   validator(categoriesValidation),
   createCategory
 );
-router.put(
-  "/:id",
-  checkAuth,
-  authorize(role.admin),
-  validator(categoriesValidation),
-  updateCategory
-);
+router.put("/:id", checkAuth, authorize(role.admin), updateCategory);
 router.delete("/:id", checkAuth, authorize(role.admin), deleteCategory);
 
 module.exports = router;
