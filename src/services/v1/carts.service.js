@@ -42,7 +42,9 @@ const createProductInCartService = async (
   productId,
   customerId,
   quantity,
-  price
+  price,
+  image,
+  
 ) => {
   const cart = await Cart.findOne({ customerId: customerId });
 
@@ -51,6 +53,8 @@ const createProductInCartService = async (
     cartId: cart._id,
     quantity: quantity,
     price: price,
+    image: image,
+    
   });
   return productCart;
 };

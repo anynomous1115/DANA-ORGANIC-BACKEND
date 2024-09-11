@@ -8,13 +8,15 @@ const { paginateUtil } = require("../../utils/pagination");
 
 const getAllPosts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
-    const { posts, totalCount } = await getAllPostsService(page, limit);
-    const paginate = await paginateUtil(req, totalCount);
+    // const page = parseInt(req.query.page) || 1;
+    // const limit = parseInt(req.query.limit) || 5;
+    // const { posts, totalCount } = await getAllPostsService(page, limit);
+    // const paginate = await paginateUtil(req, totalCount);
+
+    const { posts } = await getAllPostsService();
     successHandler(
       res,
-      { posts, paginate },
+      { posts },
       "Posts fetched successfully!",
       200
     );
