@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const localDB = `mongodb://localhost:27017/DANA-ORGANIC`;
-//   process.env.MONGODB_CONNECT_STRING_LOCAL ||
-//   process.env.MONGODB_CONNECT_STRING_CLOUD;
+const localDB =
+    process.env.MONGODB_CONNECT_STRING_LOCAL ||
+    `mongodb://localhost:27017/DANA-ORGANIC`;
 
 const connectDB = async () => {
   try {

@@ -6,7 +6,7 @@ const {
 
 const getProfileByCustomerService = async (customerId) => {
   const customer = await Customer.findById(customerId).select(
-    "fullName phone email Dob _id"
+    "fullname phone email Dob _id password"
   );
   if (!customer) {
     throw { message: "Profile not found!", code: 404 };
@@ -39,7 +39,7 @@ const updateProfileByCustomerService = async (customerId, data) => {
   });
   return {
     customer: {
-      fullnameL: updatedCustomer.fullname,
+      fullname: updatedCustomer.fullname,
       phone: updatedCustomer.phone,
       Dob: updatedCustomer.Dob,
       email: updatedCustomer.email,

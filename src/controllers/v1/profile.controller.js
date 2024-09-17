@@ -17,6 +17,7 @@ const getProfileByCustomer = async (req, res) => {
 
 const updateProfileByCustomer = async (req, res) => {
   try {
+    console.log("Request Body:", req.body);
     const { _id } = req.user;
     const profile = await updateProfileByCustomerService(_id, req.body);
     successHandler(res, profile, "Update profile successfully!", 200);
