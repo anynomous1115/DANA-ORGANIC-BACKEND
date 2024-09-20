@@ -12,6 +12,7 @@ const loginAdminService = async (email, password) => {
   console.log(email, password);
   const admin = await Admin.findOne({ email: email }).exec();
   if (!admin) {
+    console.error("No admin found with this email.");
     throw { message: "Email or password is incorrect !", code: 401 };
   }
 
