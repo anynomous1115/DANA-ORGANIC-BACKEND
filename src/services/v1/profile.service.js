@@ -30,13 +30,16 @@ const updateProfileByCustomerService = async (customerId, data) => {
     );
   }
   const newProfile = {
-    fullname: customer.fullname,
-    phone: customer.phone,
-    Dob: customer.Dob,
+    fullname: data.fullname,
+    phone: data.phone,
+    email: data.email,
+    password: data.password,
+    location: newLocation ? newLocation._id : data.location, 
+    Dob: data.Dob,
   };
   const updatedCustomer = await Customer.findByIdAndUpdate(customerId, {
-    $set: Object.assign(newProfile),
-  });
+    $set: newProfile,
+  }, { new: true });
   return {
     customer: {
       fullname: updatedCustomer.fullname,
