@@ -28,17 +28,19 @@ const getCarts = async (req, res) => {
 const createProductInCart = async (req, res) => {
   try {
     const { _id } = req.user;
-    const { productId, quantity, price,image,productName } = req.body;
+    const { productId, quantity, price, image, productName } = req.body;
     const cart = await createProductInCartService(
       productId,
       _id,
       quantity,
       price,
       image,
-      productName,
+      productName
     );
     successHandler(res, cart, "Product added to cart successfully", 201);
   } catch (error) {
+    console.log(error);
+
     errorHandler(res, error);
   }
 };

@@ -11,6 +11,7 @@ const getAllOrders = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
     const { data, totalCount } = await getAllOrdersService(page, limit);
+    console.log(data);
     const paginate = await paginateUtil(req, totalCount);
     successHandler(
       res,
@@ -22,6 +23,7 @@ const getAllOrders = async (req, res) => {
       200
     );
   } catch (error) {
+    console.log(error);
     errorHandler(res, error);
   }
 };

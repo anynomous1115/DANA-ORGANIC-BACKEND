@@ -23,18 +23,15 @@ const getAllOrdersService = async (page, limit) => {
       const products = await Promise.all(
         orderProducts.map(async (orderProduct) => {
           const { productId } = orderProduct;
-          console.log(orderProduct);
-
           const product = await Product.findById(productId);
           return {
-            ...product.toObject(),
+            ...product,
           };
         })
       );
       return {
         ...order.toObject(),
         customer: {
-          fullname: customer.fullname,
           email: customer.email,
           phone: customer.phone,
         },

@@ -3,6 +3,7 @@ const Category = require("../../models/categories.model");
 const OrderProduct = require("../../models/orders-products.model");
 const Product = require("../../models/products.model");
 const { getCategoryService } = require("./categories.service");
+const Order = require("../../models/orders.model");
 
 const getAllProductsService = async (page, limit) => {
   const startIndex = (page - 1) * limit;
@@ -70,9 +71,15 @@ const updateProductService = async (id, product) => {
 
 const deleteProductService = async (id) => {
   const checkOrderProducts = await OrderProduct.find({ productId: id });
-  if (checkOrderProducts.length > 0) {
-    throw { message: "Product is still in the order", code: 404 };
-  }
+  await Promise.all(
+    checkOrderProducts.map(async (i) => {
+      const order = await Order.findById(i.orderId);
+      if (order.status === 1) {
+        throw { message: "Product is still in the order", code: 404 };
+      }
+    })
+  );
+
   const deletedProduct = await Product.findByIdAndDelete(id);
   if (!deletedProduct) {
     throw { message: "Product not found!", code: 404 };

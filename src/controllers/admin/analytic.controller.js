@@ -1,9 +1,15 @@
-const { successHandler } = require("../../helper/response");
+const { successHandler, errorHandler } = require("../../helper/response");
+const { getAnalyticService } = require("../../services/admin/analytic.service");
 
 const getAnalytic = async (req, res) => {
   try {
-    const analytic = await analyticService.getAnalytic();
-    successHandler(res, analytic, "Get analytic success", 200);
+    const { totalOrders, totalRevenue } = await getAnalyticService();
+    successHandler(
+      res,
+      { totalOrders, totalRevenue },
+      "Get analytic success",
+      200
+    );
   } catch (error) {
     errorHandler(res, error);
   }
