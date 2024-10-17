@@ -3,7 +3,10 @@ const OrderProduct = require("../../models/orders-products.model");
 const Order = require("../../models/orders.model");
 
 const getAnalyticService = async () => {
+ 
   const totalOrders = await Order.countDocuments();
+
+
   const totalRevenue = await Order.aggregate([
     {
       $group: {
@@ -12,6 +15,8 @@ const getAnalyticService = async () => {
       },
     },
   ]);
+
+
   const ordersProducts = await OrderProduct.aggregate([
     {
       $group: {
@@ -24,52 +29,53 @@ const getAnalyticService = async () => {
   const revenueByCategory = await OrderProduct.aggregate([
     {
       $lookup: {
-        from: "products", // Tên collection chứa thông tin sản phẩm
-        localField: "productId", // Trường trong OrderProduct
-        foreignField: "_id", // Trường trong Products
-        as: "productDetails", // Tên trường mới sẽ chứa thông tin sản phẩm
+        from: "products",
+        localField: "productId",
+        foreignField: "_id",
+        as: "productDetails",
       },
     },
     {
-      $unwind: "$productDetails", // Giải nén mảng productDetails
+      $unwind: "$productDetails",
     },
     {
       $group: {
-        _id: "$productDetails.categoryId", // Nhóm theo categoryId
+        _id: "$productDetails.categoryId",
         totalRevenueCategory: {
           $sum: { $multiply: ["$productDetails.price", "$quantity"] },
-        }, // Tính tổng doanh thu
+        },
       },
     },
   ]);
+
+
   const totalRevenueByCategory = await Promise.all(
     revenueByCategory.map(async (i) => {
       const category = await Category.findById(i._id);
-
       return {
-        category: category.categoryName,
+        category: category ? category.categoryName : 'Unknown', 
         totalRevenue: i.totalRevenueCategory,
       };
     })
   );
 
   const revenuePercentage = totalRevenueByCategory.map((i) => {
-    const category = i.category;
-    const totalRevenueCategory = i.totalRevenue;
     const percentage =
-      (totalRevenueCategory / totalRevenue[0].totalRevenueByAll) * 100;
+      (i.totalRevenue / (totalRevenue[0]?.totalRevenueByAll || 1)) * 100;
     return {
-      category: category,
+      category: i.category,
       percentage: percentage.toFixed(2),
     };
   });
+
   const analytics = {
-    totalOrders: totalOrders,
-    totalRevenue: totalRevenue,
-    totalOrdersProducts: ordersProducts,
-    totalRevenueByCategory: totalRevenueByCategory,
-    revenuePercentage: revenuePercentage,
+    totalOrders,
+    totalRevenue: totalRevenue[0]?.totalRevenueByAll || 0,
+    totalOrdersProducts: ordersProducts[0]?.totalProducts || 0,
+    totalRevenueByCategory,
+    revenuePercentage,
   };
+
   return analytics;
 };
 
